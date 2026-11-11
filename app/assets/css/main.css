@@ -1,0 +1,12 @@
+@import "tailwindcss";
+.t-xl{
+    @apply text-xl font-semibold text-center mb-4
+}.btn-blue{
+    @apply  w-full text-white rounded-lg bg-blue-600 hover:bg-blue-700 p-3
+}.input {
+    @apply w-full border rounded-lg p-3 outline-none focus:border-blue-500
+}.box{
+    @apply block text-white rounded-md px-3 py-2 hover:bg-blue-500 py-4 truncate
+}.btn-red {
+    @apply  w-full text-white rounded-lg bg-red-600 hover:bg-red-700 p-3
+}
