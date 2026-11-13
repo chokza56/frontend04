@@ -17,19 +17,7 @@
               <nuxt-link to="/admin/dashboard" class="box">ภาพรวม</nuxt-link>
             </div>
             <div>
-              <nuxt-link to="/admin/dashboard/group" class="box">มอบหมายกรรมการผู้ประเมิน</nuxt-link>
-            </div>
-            <div>
-              <nuxt-link to="/admin/dashboard/figtime" class="box truncate">กำหนดระยะเวลาเปิดปิดการประเมิน</nuxt-link>
-            </div>
-            <div>
               <nuxt-link to="/admin/dashboard/edituser" class="box">แก้ไขข้อมูลและผู้ใช้</nuxt-link>
-            </div>
-            <div>
-              <nuxt-link to="/admin/dashboard/form" class="box">สร้างแบบฟอร์มการประเมิน</nuxt-link>
-            </div>
-            <div>
-              <nuxt-link to="/admin/dashboard/result" class="box">สรุปผลการประเมิน</nuxt-link>
             </div>
           </div>
         </div>
