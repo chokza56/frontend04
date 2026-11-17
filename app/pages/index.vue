@@ -1,65 +1,107 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <div class="flex min-h-56 items-center justify-center bg-slate-700 px-6 text-center text-white">
-      <div>
-        <p class="mb-2 text-sm font-medium tracking-widest text-blue-200">PERSONNEL MANAGEMENT</p>
-        <h1 class="text-3xl font-bold md:text-4xl">ระบบประเมินบุคลากร</h1>
-        <p class="mt-3 text-slate-200">เข้าสู่ระบบเพื่อใช้งาน</p>
-      </div>
-    </div>
-
-    <div class="flex justify-center px-4 py-12">
-      <form @submit.prevent="login" class="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
-        <h2 class="mb-6 text-center text-2xl font-bold text-gray-800">เข้าสู่ระบบ</h2>
-        <div class="mb-4">
-          <label class="mb-1 block text-sm text-gray-600">ชื่อผู้ใช้</label>
-          <input v-model="username" type="text" class="input" placeholder="กรอกชื่อผู้ใช้" required>
+    <div class="flex bg-gray-400 w-full h-60">
+        <div class="flex justify-center items-center text-center text-4xl text-white w-full h-full">
+            <h1>ระบบประเมินบุคลากร</h1>
         </div>
-        <div class="mb-6">
-          <label class="mb-1 block text-sm text-gray-600">รหัสผ่าน</label>
-          <input v-model="password" type="password" class="input" placeholder="กรอกรหัสผ่าน" required>
-        </div>
-        <button type="submit" :disabled="loading" class="btn-blue disabled:opacity-50">
-          {{ loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ' }}
-        </button>
-        <p class="mt-4 text-center text-sm text-gray-500">
-          ยังไม่มีบัญชี? <NuxtLink to="/register" class="font-semibold text-blue-600 hover:underline">สมัครสมาชิก</NuxtLink>
-        </p>
-      </form>
     </div>
-  </div>
+    <div class="flex items-center justify-center mt-15">
+        <form action="" @submit.prevent="login">
+            <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-600 text-center">login</h1>
+            </div>
+            <div class="mt-4">
+                <label class="text-gray-600">username</label>
+                <input type="text" placeholder="กรอกชื่อ.." v-model="username" class="input" required>
+            </div>
+            <div class="mt-3">
+                <label class="text-gray-600">password</label>
+                <input type="password" placeholder="กรอกรหัส.." v-model="password" class="input" required>
+            </div>
+            <button class="w-full text-white rounded-lg bg-blue-600 hover:bg-blue-700 p-3 mt-6" type="submit">login</button>
+            <nuxt-link to="/register" class="hover:text-blue-700">ลงทะเบียน</nuxt-link>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script setup>
 import { jwtDecode } from 'jwt-decode'
+import { ref } from 'vue'
 
 const api = useApi()
 const username = ref('')
 const password = ref('')
-const loading = ref(false)
 
-async function login() {
-  loading.value = true
-  try {
-    const res = await api.post('/auth/login', {
-      username: username.value,
-      password: password.value
-    })
+const login = async () => {
+    try {
+        const res = await api.post('/auth/login', {
+            username: username.value,
+            password: password.value
+        })
+        const token = res.data.authorization 
+        const status = res.data.status
 
-    const token = res.data.authorization
-    localStorage.setItem('token', token)
+        localStorage.setItem('token', token)
+        localStorage.setItem('username', username.value)
+        localStorage.setItem('status', status)
 
-    const user = jwtDecode(token)
-    localStorage.setItem('username', user.username || username.value)
+        const decode = jwtDecode(token)
 
-    if (user.role === 'hr') await navigateTo('/admin/dashboard')
-    else if (user.role === 'judge') await navigateTo('/judge/dashboard')
-    else if (user.role === 'user') await navigateTo('/user/dashboard')
-    else alert('ไม่พบสิทธิ์การใช้งานของบัญชีนี้')
-  } catch (err) {
-    alert(err.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ')
-  } finally {
-    loading.value = false
-  }
+        if (status === 0) {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard/editpassword') 
+            } else {
+                navigateTo('/user/dashboard/editpassword')
+            }
+        } else {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard')
+            } else {
+                navigateTo('/user/dashboard')
+            }
+        }
+
+    } catch (error) {
+        console.error(error)
+        alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง')
+    }
 }
 </script>
+
+import { ref } from 'vue'
+import { jwtDecode } from 'jwt-decode'
+
+const api = useApi()
+
+const username = ref('')
+const password = ref('')
+
+const login = async () => {
+    try {
+        const res = await api.post('auth/login', {
+            username : username.value,
+            password : password.value
+        })
+        const token = res.data.authorization
+        localStorage.setItem('token',token)
+        localStorage.setItem('username',username.value)
+        
+        const decode = jwtDecode(token)
+        const status = res.data.status
+
+        if (status === 0) {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard/editpassword')
+            } else {
+                navigateTo('/user/dashboard/edituser')
+            }
+        } else if (decode.role === 'judge') {
+            navigateTo('/judge/dashboard')
+        }   else if (decode.role === 'user') {
+            navigateTo('/user/dashboard')
+        }
+    } catch (err) {
+        console.error(err.response?.data?.message)      
+    }
+}

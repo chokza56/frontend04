@@ -1,36 +1,56 @@
 <template>
-  <div class="flex min-h-screen bg-gray-100">
-    <aside class="flex w-64 shrink-0 flex-col justify-between bg-slate-800 p-4 text-white">
-      <div>
-        <div class="mb-8 text-center">
-          <h1 class="text-lg font-bold">ระบบประเมินบุคลากร</h1>
-          <p class="mt-1 text-sm text-slate-300">กรรมการประเมิน</p>
-          <p class="mt-4 break-all text-sm">{{ username }}</p>
+  <div class="relative">
+    <div class="flex">
+      <!-- Sidebar ฝั่งกรรมการ -->
+      <div class="bg-gray-600 h-screen w-64 flex flex-col justify-between p-4 shrink-0">  
+        <div>
+          <div class="text-center mb-6">
+            <h1 class="text-xl font-semibold text-white mb-2">กรรมการประเมินผล</h1>
+            <p class="text-xl font-semibold text-white mb-2">ผู้ประเมิน</p>
+          </div>
+          
+          <div class="mb-6">
+            <p class="text-white text-lg font-semibold">username: {{ username }}</p>
+          </div>
+
+          <div class="space-y-2">
+            <div>
+              <nuxt-link to="/judge/dashboard" class="box block">ผู้รับการประเมินที่ได้รับมอบหมาย</nuxt-link>
+            </div>
+            <div>
+              <nuxt-link to="/judge/dashboard/editjudge" class="box block">แก้ไขข้อมูล</nuxt-link>
+            </div>
+            <div>
+              <nuxt-link to="/judge/dashboard/editpassword" class="box block">แก้ไขรหัสผ่าน</nuxt-link>
+            </div>
+          </div>
         </div>
-        <NuxtLink to="/judge/dashboard" class="box">หน้าหลักกรรมการ</NuxtLink>
+
+        <div>
+          <button type="button" @click="logout" class="btn-red w-full">logout</button>
+        </div>
       </div>
-      <button @click="logout" class="btn-red">ออกจากระบบ</button>
-    </aside>
-    <main class="min-w-0 flex-1 p-4 md:p-8">
-      <NuxtPage />
-    </main>
+
+      <!-- Main Content -->
+      <div class="w-full min-h-screen bg-gray-100 p-6 overflow-y-auto">
+        <NuxtPage />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { jwtDecode } from 'jwt-decode'
-const username = ref('')
+import { ref, onMounted } from 'vue'
+
 const router = useRouter()
+const username = ref('')
+
 onMounted(() => {
-  const token = localStorage.getItem('token')
-  if (!token) return router.replace('/')
-  const user = jwtDecode(token)
-  if (user.role !== 'judge') return router.replace(user.role === 'hr' ? '/admin/dashboard' : '/user/dashboard')
-  username.value = user.username || ''
+  username.value = localStorage.getItem('username') || ''
 })
+
 function logout() {
-  localStorage.removeItem('token')
-  localStorage.removeItem('username')
+  localStorage.clear()
   router.push('/')
 }
 </script>
