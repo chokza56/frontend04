@@ -27,7 +27,26 @@
 </template>
 
 <script setup>
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode';
+
+const username = ref('')
+
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if(token) {
+    const decode = jwtDecode(token)
+    username.value = decode.username || localStorage.getItem('username') || ''
+  }
+})
+const logout = () => {
+  localStorage.clear()
+  navigateTo('/')
+}
+</script>
+
+
+
+<!-- import { jwtDecode } from 'jwt-decode'
 
 const username = ref('')
 
@@ -42,6 +61,4 @@ onMounted(() => {
 const logout = () => {
   localStorage.clear()
   navigateTo('/')
-}
-
-</script>
+} -->

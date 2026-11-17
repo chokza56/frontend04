@@ -94,7 +94,7 @@ const register = async () => {
         alert(res.data.message)
         navigateTo('/')
     } catch (err) {
-        alert(err.response?.data?.message || err.message)
+        alert(err.response?.data?.message)
     }
 }
 </script>

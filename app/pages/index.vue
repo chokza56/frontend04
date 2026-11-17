@@ -35,41 +35,40 @@ const password = ref('')
 
 const login = async () => {
     try {
-        const res = await api.post('/auth/login', {
-            username: username.value,
-            password: password.value
+        const res = await api.post('auth/login', {
+            username : username.value,
+            password : password.value
         })
-        const token = res.data.authorization 
+        const token = res.data.authrization
         const status = res.data.status
 
         localStorage.setItem('token', token)
         localStorage.setItem('username', username.value)
-        localStorage.setItem('status', status)
+        localStorage.setItem('status',status)
 
         const decode = jwtDecode(token)
 
-        if (status === 0) {
-            if (decode.role === 'judge') {
-                navigateTo('/judge/dashboard/editpassword') 
-            } else {
-                navigateTo('/user/dashboard/editpassword')
+        if ( status === 0 ){
+            if (decode.role === 'judge'){
+                navigateTo('judge/dashboard/editpassword')
+            }else {
+                navigateTo('user/dashboard/editpassword')
             }
-        } else {
-            if (decode.role === 'judge') {
-                navigateTo('/judge/dashboard')
-            } else {
-                navigateTo('/user/dashboard')
+        }else {
+            if (decode.role === 'judge'){
+                navigateTo('judge/dashboard')
+            }else {
+                navigateTo('user/dashboard')
             }
         }
-
-    } catch (error) {
-        console.error(error)
-        alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง')
+    } catch (err) {
+        console.error(err.response?.data?.messaga)
+        alert('ใส่ไม่ถูก')
     }
 }
 </script>
 
-import { ref } from 'vue'
+<!-- import { ref } from 'vue'
 import { jwtDecode } from 'jwt-decode'
 
 const api = useApi()
@@ -105,3 +104,45 @@ const login = async () => {
         console.error(err.response?.data?.message)      
     }
 }
+
+import { jwtDecode } from 'jwt-decode'
+import { ref } from 'vue'
+
+const api = useApi()
+const username = ref('')
+const password = ref('')
+
+const login = async () => {
+    try {
+        const res = await api.post('/auth/login', {
+            username: username.value,
+            password: password.value
+        })
+        const token = res.data.authorization 
+        const status = res.data.status
+
+        localStorage.setItem('token', token)
+        localStorage.setItem('username', username.value)
+        localStorage.setItem('status', status)
+
+        const decode = jwtDecode(token)
+
+        if (status === 0) {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard/editpassword') 
+            } else {
+                navigateTo('/user/dashboard/editpassword')
+            }
+        } else {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard')
+            } else {
+                navigateTo('/user/dashboard')
+            }
+        }
+
+    } catch (error) {
+        console.error(error)
+        alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง')
+    }
+} -->

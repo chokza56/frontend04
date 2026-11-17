@@ -19,6 +19,24 @@ const form = ref(null)
 
 onMounted(async () => {
   try {
+    const res = await api.post('/auth/form')
+    const data = res?.data || res
+    if (data?.token){
+      form.value = data
+    }
+  } catch (err) {
+    form.value = null 
+    console.error(err , 'ทำไม่ถูกแล้วกู')
+  }
+})
+</script>
+
+
+<!-- const api = useApi()
+const form = ref(null)
+
+onMounted(async () => {
+  try {
     const res = await api.get('/auth/form')
     const data = res?.data || res 
     if (data?.token) {
@@ -27,5 +45,4 @@ onMounted(async () => {
   } catch (err) {
     form.value = null
   }
-})
-</script>
+}) -->
