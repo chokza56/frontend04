@@ -20,9 +20,9 @@
 <script setup>
 import { jwtDecode } from 'jwt-decode'
 import { ref } from 'vue'
-const api = useApi()
 const username = ref('')
 const password = ref('')
+const api = useApi()
 
 const login = async () => {
     try {
@@ -37,11 +37,12 @@ const login = async () => {
         localStorage.setItem('username',username.value)
         if ( status === 0 && decode.role === 'user'){
             return navigateTo('/user/dashboard/editpassword')
-        }navigateTo(decode.role === 'judge' ? 'judge/dashboard' : '/hr/dashboard')
-        alert('yes yes yess')
+        }
+         navigateTo(decode.role === 'judge' ? '/judge/dashboard' : '/hr/dashboard')
+         alert('yes yes yes')
     } catch (err) {
         console.error(err.response?.data?.message)
-        alert('O no no no no o no ')
+        alert('ไม่ทำแม่งแล้ว')
     }
 }
 </script>
