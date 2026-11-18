@@ -64,37 +64,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { reactive } from 'vue'
 
 const api = useApi()
 
-const username = ref('')
-const password = ref('')
-const fullname = ref('')
-const email = ref('')
-const phone = ref('')
-const czid = ref('')
-const department = ref('')
-const salary = ref('')
-const level = ref('')
+const form = reactive({
+    username: '',
+    password: '',
+    fullname: '',
+    email: '',
+    phone: '',
+    czid: '',
+    department: '',
+    salary: '',
+    level: ''
+})
 
 const register = async () => {
     try {
-        const res = await api.post('auth/register', {
-            username: username.value,
-            password: password.value,
-            fullname: fullname.value,
-            email: email.value,
-            phone: phone.value,
-            czid: czid.value,
-            department: department.value,
-            salary: salary.value,
-            level: level.value
-        })
-        alert(res.data.message)
-        navigateTo('/')
+        // ส่งตัวแปร form ไปได้เลย ไม่ต้อง .value ทีละตัว
+        const res = await api.post('/auth/register', form)
     } catch (err) {
-        alert(err.response?.data?.message)
+        console.error(err.response?.data?.message)
     }
 }
 </script>
