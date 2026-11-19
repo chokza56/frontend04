@@ -1,18 +1,26 @@
 <template>
-    <div class="bg-pink-50 min-h-screen flex flex-col justify-center items-center p-4">
-        <h1 class="text-grat-700 text-3xl font-bold text-center mb-5">ระบบประเมิน</h1>
-        <form @submit.prevent="login" class="w-full max-w-sm rounded-lg border border-gray-200  space-y-4 p-6 shadow-lg">
-            <h1 class="text-center text-gray-700 text-2xl font-bold">login</h1>
+    <div class="flex bg-gray-400 w-full h-60">
+        <div class="flex justify-center items-center text-center text-4xl text-white w-full h-full">
+            <h1>ระบบประเมินบุคลากร</h1>
+        </div>
+    </div>
+    <div class="flex items-center justify-center mt-15">
+        <form action="" @submit.prevent="login">
+            <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
             <div>
-                <label class="text-gray-600 font-semibold text-sm">username</label>
-                <input v-model="username" type="text" placeholder="" class="w-full rounded-lg border p-3">
+                <h1 class="text-2xl font-bold text-gray-600 text-center">login</h1>
             </div>
-            <div>
-                <label class="text-gray-600 font-semibold text-sm">password</label>
-                <input v-model="password" type="password" placeholder="" class="w-full rounded-lg border p-3">
+            <div class="mt-4">
+                <label class="text-gray-600">username</label>
+                <input type="text" placeholder="กรอกชื่อ.." v-model="username" class="input" required>
             </div>
-            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-lg border mt-3">login</button>
-            <nuxt-link to="/resgister" class="text-blue-500 ">สมัครสมาชิก</nuxt-link>
+            <div class="mt-3">
+                <label class="text-gray-600">password</label>
+                <input type="password" placeholder="กรอกรหัส.." v-model="password" class="input" required>
+            </div>
+            <button class="w-full text-white rounded-lg bg-blue-600 hover:bg-blue-700 p-3 mt-6" type="submit">login</button>
+            <nuxt-link to="/register" class="hover:text-blue-700">ลงทะเบียน</nuxt-link>
+            </div>
         </form>
     </div>
 </template>
@@ -20,29 +28,129 @@
 <script setup>
 import { jwtDecode } from 'jwt-decode'
 import { ref } from 'vue'
+
+const api = useApi()
 const username = ref('')
 const password = ref('')
-const api = useApi()
 
 const login = async () => {
     try {
-        const res = await api('/auth/login', {
-            username:username.value,
-            password:password.value
+        const res = await api.post('auth/login', {
+            username: username.value,
+            password: password.value
         })
-        const token = res.data.authorization
-        const status = res.data.status
-        const decode = jwtDecode(token)
-        localStorage.setItem('token',token)
-        localStorage.setItem('username',username.value)
-        if ( status === 0 && decode.role === 'user'){
-            return navigateTo('/user/dashboard/editpassword')
+
+        console.log('login response:', res.data)
+
+        const token = res.data.authorization ?? res.data.token
+        if (!token) {
+            throw new Error('ไม่พบ token ใน response')
         }
-         navigateTo(decode.role === 'judge' ? '/judge/dashboard' : '/hr/dashboard')
-         alert('yes yes yes')
+
+        const decode = jwtDecode(token)
+        console.log('decoded jwt:', decode)
+
+        const status = decode.status ?? res.data.status ?? res.data.user?.status
+
+        localStorage.setItem('token', token)
+        localStorage.setItem('username', username.value)
+        localStorage.setItem('status', String(status))
+
+        if (decode.role === 'user') {
+            if (Number(status) === 0) {
+                return await navigateTo('/user/dashboard/editpassword')
+            } else {
+                return await navigateTo('/user/dashboard')
+            }
+        } else if (decode.role === 'judge') {
+            return await navigateTo('/judge/dashboard')
+        } else if (decode.role === 'hr') {
+            return await navigateTo('/hr/dashboard')
+        } else {
+            alert('ไม่พบสิทธิ์การใช้งานที่ถูกต้อง')
+        }
     } catch (err) {
-        console.error(err.response?.data?.message)
-        alert('ไม่ทำแม่งแล้ว')
+        console.error(err.response?.data?.message || err)
+        alert('เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้งนะ')
     }
 }
 </script>
+
+<!-- import { ref } from 'vue'
+import { jwtDecode } from 'jwt-decode'
+
+const api = useApi()
+
+const username = ref('')
+const password = ref('')
+
+const login = async () => {
+    try {
+        const res = await api.post('auth/login', {
+            username : username.value,
+            password : password.value
+        })
+        const token = res.data.authorization
+        localStorage.setItem('token',token)
+        localStorage.setItem('username',username.value)
+        
+        const decode = jwtDecode(token)
+        const status = res.data.status
+
+        if (status === 0) {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard/editpassword')
+            } else {
+                navigateTo('/user/dashboard/edituser')
+            }
+        } else if (decode.role === 'judge') {
+            navigateTo('/judge/dashboard')
+        }   else if (decode.role === 'user') {
+            navigateTo('/user/dashboard')
+        }
+    } catch (err) {
+        console.error(err.response?.data?.message)      
+    }
+}
+
+import { jwtDecode } from 'jwt-decode'
+import { ref } from 'vue'
+
+const api = useApi()
+const username = ref('')
+const password = ref('')
+
+const login = async () => {
+    try {
+        const res = await api.post('/auth/login', {
+            username: username.value,
+            password: password.value
+        })
+        const token = res.data.authorization 
+        const status = res.data.status
+
+        localStorage.setItem('token', token)
+        localStorage.setItem('username', username.value)
+        localStorage.setItem('status', status)
+
+        const decode = jwtDecode(token)
+
+        if (status === 0) {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard/editpassword') 
+            } else {
+                navigateTo('/user/dashboard/editpassword')
+            }
+        } else {
+            if (decode.role === 'judge') {
+                navigateTo('/judge/dashboard')
+            } else {
+                navigateTo('/user/dashboard')
+            }
+        }
+
+    } catch (error) {
+        console.error(error)
+        alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง')
+    }
+} -->

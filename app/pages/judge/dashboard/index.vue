@@ -13,7 +13,6 @@
         <textarea v-model="form.comment" rows="3" placeholder="กรอกความเห็น.." class="input"></textarea>
       </div>
 
-      <!-- ส่วนอัปโหลดรูปภาพลายเซ็น -->
       <div>
         <label class="mb-1 block text-sm text-gray-600">อัปโหลดรูปภาพลายเซ็น (หลักฐาน)</label>
         <input type="file" @change="handleFileUpload" accept="image/*" class="input p-2" required />
@@ -35,7 +34,7 @@ const route = useRoute()
 const router = useRouter()
 const api = useApi()
 
-const assessId = route.query.id // รับ ID ผู้รับการประเมินจาก URL Query String
+const assessId = route.query.id 
 
 const form = ref({
   score: '',
@@ -44,7 +43,6 @@ const form = ref({
 })
 const fileName = ref('')
 
-// ฟังก์ชันเก็บไฟล์รูปภาพที่อัปโหลด
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
@@ -53,7 +51,6 @@ const handleFileUpload = (event) => {
   }
 }
 
-// ฟังก์ชันส่งข้อมูลการประเมิน + รูปภาพ (ใช้ FormData)
 const submitAssessment = async () => {
   try {
     const formData = new FormData()
@@ -63,7 +60,6 @@ const submitAssessment = async () => {
       formData.append('signature', form.value.signature) // แนบไฟล์รูปภาพลายเซ็น
     }
 
-    // ตัวอย่าง Endpoint ส่งข้อมูล (ปรับเปลี่ยนตาม Backend ของคุณ)
     await api.post(`/committee/assess/${assessId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'

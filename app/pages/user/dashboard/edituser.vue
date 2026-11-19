@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-2xl rounded-2xl bg-white p-6 shadow-sm my-6">
+  <div class="mx-auto max-w-300 rounded-2xl bg-white p-6 shadow-sm my-6">
     <h1 class="mb-6 text-xl font-bold text-gray-800">ข้อมูลของฉัน</h1>
 
     <form @submit.prevent="save" class="space-y-4">
@@ -62,40 +62,23 @@
 import { jwtDecode } from 'jwt-decode'
 
 const api = useApi()
-const form = ref({
-  username: '',
-  fullname: '',
-  email: '',
-  phone: '',
-  czid: '',
-  department: '',
-  salary: '',
-  level: ''
-})
 const userid = ref('')
+const form = ref({
+  username: '', fullname: '', email: '', phone: '',
+  czid: '', department: '', salary: '', level: ''
+})
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
   if (!token) return navigateTo('/')
 
   try {
-    const decoded = jwtDecode(token)
-    userid.value = decoded.id
-
-    const res = await api.get('auth/me')
-    const user = res.data?.data || res.data?.user || res.data
+    userid.value = jwtDecode(token).id
+    const { data } = await api.get('/auth/me')
+    const user = data?.data
 
     if (user) {
-      form.value = {
-        username: user.username || '',
-        fullname: user.fullname || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        czid: user.czid || '',
-        department: user.department || '',
-        salary: user.salary || '',
-        level: user.level || ''
-      }
+      Object.keys(form.value).forEach(k => (form.value[k] = user[k] ?? ''))
     }
   } catch (err) {
     alert(err.response?.data?.message || 'โหลดข้อมูลไม่สำเร็จ')
@@ -104,16 +87,7 @@ onMounted(async () => {
 
 const save = async () => {
   try {
-    await api.put(`/auth/me`, {
-      username: form.username,
-      fullname: form.value.fullname,
-      email: form.value.email,
-      phone: form.value.phone,
-      czid: form.value.czid,
-      department: form.value.department,
-      salary: form.value.salary,
-      level: form.value.level
-    })
+    await api.put('/auth/me', form.value)
     alert('บันทึกข้อมูลสำเร็จ')
   } catch (err) {
     alert(err.response?.data?.message || 'เกิดข้อผิดพลาดในการบันทึก')

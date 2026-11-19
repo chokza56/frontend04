@@ -50,7 +50,7 @@ const save = async () => {
       old_password: form.value.old_password,
       new_password: form.value.new_password
     })
-    
+      
     alert('เปลี่ยนรหัสผ่านสำเร็จ')
     form.value = { old_password: '', new_password: '', confirm_password: '' }
     

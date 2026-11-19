@@ -71,7 +71,7 @@ const form = reactive({
 })
 const register = async () => {
     try {
-        const res = await api('/auth/register',form)   
+        const res = await api.post('/auth/register',form)   
         alert('สมัครได้แว้ววว')     
     } catch (err) {
         console.error(err.response?.data?.message)
