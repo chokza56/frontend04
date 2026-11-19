@@ -5,7 +5,7 @@
     <form @submit.prevent="save" class="space-y-4">
       <div>
         <label class="mb-1 block text-sm text-gray-600">ชื่อผู้ใช้</label>
-        <input v-model="form.username" class="input bg-gray-50" readonly />
+        <input v-model="form.username" class="input " required />
       </div>
 
       <div>
@@ -72,7 +72,7 @@ const form = ref({
   salary: '',
   level: ''
 })
-const userId = ref('')
+const userid = ref('')
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
@@ -80,22 +80,21 @@ onMounted(async () => {
 
   try {
     const decoded = jwtDecode(token)
-    userId.value = decoded.id
+    userid.value = decoded.id
 
-    const res = await api.get('admin/users')
-    const users = res.data?.data || res.data || res
-    const user = users.find(item => item.id == userId.value)
+    const res = await api.get('auth/me')
+    const user = res.data?.data || res.data?.user || res.data
 
     if (user) {
       form.value = {
-        username: user.username,
-        fullname: user.fullname,
-        email: user.email,
+        username: user.username || '',
+        fullname: user.fullname || '',
+        email: user.email || '',
         phone: user.phone || '',
         czid: user.czid || '',
-        department: user.department || user.departmant || '',
+        department: user.department || '',
         salary: user.salary || '',
-        level: user.level || user.leval || ''
+        level: user.level || ''
       }
     }
   } catch (err) {
@@ -105,7 +104,8 @@ onMounted(async () => {
 
 const save = async () => {
   try {
-    await api.put(`admin/users/${userId.value}`, {
+    await api.put(`/auth/me`, {
+      username: form.username,
       fullname: form.value.fullname,
       email: form.value.email,
       phone: form.value.phone,

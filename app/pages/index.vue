@@ -39,31 +39,33 @@ const login = async () => {
             username : username.value,
             password : password.value
         })
-        const token = res.data.authrization
+        const token = res.data.authorization
         const status = res.data.status
 
         localStorage.setItem('token', token)
         localStorage.setItem('username', username.value)
         localStorage.setItem('status',status)
 
-        const decode = jwtDecode(token)
+       const decode = jwtDecode(token)
+        console.log(decode)
 
-        if ( status === 0 ){
-            if (decode.role === 'judge'){
-                navigateTo('judge/dashboard/editpassword')
+        if (decode.role === 'user') {
+            if (status === 0) {
+                navigateTo('/user/dashboard/editpassword')
             }else {
-                navigateTo('user/dashboard/editpassword')
+                navigateTo('/user/dashboard')
             }
-        }else {
-            if (decode.role === 'judge'){
-                navigateTo('judge/dashboard')
-            }else {
-                navigateTo('user/dashboard')
-            }
-        }
+        } else if (decode.role === 'judge'){
+            navigateTo('/judge/dashboard')
+        } else if (decode.role === 'hr'){
+            navigateTo('/hr/dashboard')
+        } else {
+            alert('ไม่พบสิทธิ์การใช้งานที่ถูกต้อง')
+        }  
+        
     } catch (err) {
-        console.error(err.response?.data?.messaga)
-        alert('ใส่ไม่ถูก')
+        console.error(err.response?.data?.message)
+        alert('ไม่ทำแม่งแล้ว')
     }
 }
 </script>
