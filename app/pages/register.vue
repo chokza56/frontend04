@@ -6,37 +6,37 @@
 
                 <div class="mt-3">
                     <label class="text-gray-600">ชื่อผู้ใช้</label>
-                    <input type="text" placeholder="กรอกชื่อผู้ใช้.." v-model="username" class="input" required>
+                    <input type="text" placeholder="กรอกชื่อผู้ใช้.." v-model="form.username" class="input" required>
                 </div>
                 <div class="mt-3">
                     <label class="text-gray-600">รหัสผ่าน</label>
-                    <input type="password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร.." v-model="password" class="input" required>
+                    <input type="password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร.." v-model="form.password" class="input" required>
                 </div>
                 <div class="mt-3">
                     <label class="text-gray-600">ชื่อ-นามสกุล</label>
-                    <input type="text" placeholder="กรอกชื่อ-นามสกุล.." v-model="fullname" class="input" required>
+                    <input type="text" placeholder="กรอกชื่อ-นามสกุล.." v-model="form.fullname" class="input" required>
                 </div>
                 <div class="mt-3">
                     <label class="text-gray-600">อีเมล</label>
-                    <input type="email" placeholder="กรอกอีเมล.." v-model="email" class="input" required>
+                    <input type="email" placeholder="กรอกอีเมล.." v-model="form.email" class="input" required>
                 </div>
                 <div class="mt-3">
                     <label class="text-gray-600">เบอร์โทรศัพท์</label>
-                    <input type="text" placeholder="กรอกเบอร์โทรศัพท์.." v-model="phone" class="input" required>
+                    <input type="text" placeholder="กรอกเบอร์โทรศัพท์.." v-model="form.phone" class="input" required>
                 </div>
                 <div class="mt-3">
                     <label class="text-gray-600">เลขบัตรประชาชน</label>
-                    <input type="text" maxlength="13" placeholder="กรอกเลขบัตรประชาชน.." v-model="czid" class="input" required>
+                    <input type="text" maxlength="13" placeholder="กรอกเลขบัตรประชาชน.." v-model="form.czid" class="input" required>
                 </div>
 
                 <div class="mt-3">
                     <label class="text-gray-600">เงินเดือน</label>
-                    <input type="number" placeholder="กรอกเงินเดือน.." v-model="salary" class="input" required>
+                    <input type="number" placeholder="กรอกเงินเดือน.." v-model="form.salary" class="input" required>
                 </div>
 
                 <div class="mt-3">
                     <label class="text-gray-600">แผนก</label>
-                    <select v-model="department" class="input" required>
+                    <select v-model="form.department" class="input" required>
                         <option disabled value="">-- เลือกแผนก --</option>
                         <option value="IT">IT</option>
                         <option value="ช่างยนต์">ช่างยนต์</option>
@@ -45,7 +45,7 @@
 
                 <div class="mt-3">
                     <label class="text-gray-600">ระดับ (Level)</label>
-                    <select v-model="level" class="input" required>
+                    <select v-model="form.level" class="input" required>
                         <option disabled value="">-- เลือกระดับ --</option>
                         <option value="ชำนาญการ">ชำนาญการ</option>
                         <option value="ชำนาญการพิเศษ">ชำนาญการพิเศษ</option>
@@ -64,37 +64,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
+import { reactive } from 'vue'
 const api = useApi()
-
-const username = ref('')
-const password = ref('')
-const fullname = ref('')
-const email = ref('')
-const phone = ref('')
-const czid = ref('')
-const department = ref('')
-const salary = ref('')
-const level = ref('')
-
+const form = reactive({
+    username:'',password:'',fullname:'',email:'',phone:'',czid:'',department:'',salary:'',level:''
+})
 const register = async () => {
     try {
-        const res = await api.post('auth/register', {
-            username: username.value,
-            password: password.value,
-            fullname: fullname.value,
-            email: email.value,
-            phone: phone.value,
-            czid: czid.value,
-            department: department.value,
-            salary: salary.value,
-            level: level.value
-        })
-        alert(res.data.message)
-        navigateTo('/')
+        const res = await api('/auth/register',form)   
+        alert('สมัครได้แว้ววว')     
     } catch (err) {
-        alert(err.response?.data?.message)
+        console.error(err.response?.data?.message)
+        alert('ไม่ทำแล้วงอล')
     }
 }
 </script>
